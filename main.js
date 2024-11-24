@@ -3,7 +3,7 @@ const cors = require('cors');
 const bodyparser = require('body-parser');
 const path = require('path');
 const { default: mongoose } = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const port = 9089;
 
 const app = express();
