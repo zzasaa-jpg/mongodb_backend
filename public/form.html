@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+            /* flex-direction: column; */
+        }
+
+        form {
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        #eye {
+            background-color: transparent;
+            border: 1px solid black;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #submit {
+            cursor: pointer;
+        }
+
+        a {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 10px;
+        }
+
+        #popup {
+            height: 50px;
+            width: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(0, 255, 0);
+            color: black;
+            border-radius: 10px;
+            box-shadow: 1px 1px 2px black;
+            position: absolute;
+            top: -100px;
+        }
+
+        #popup>h1 {
+            font-size: 23px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="popup">
+        <h1 id="message">Login Successfully!</h1>
+    </div>
+    <a href="./">Home</a>
+    <form id="loginForm" method="post">
+        <label for="name">Name</label>
+        <input required type="text" name="text" id="name">
+        <label for="password">Password</label>
+        <input required type="password" name="password" id="password">
+        <button id="eye" type="button"><ion-icon name="eye-outline"></ion-icon></button>
+        <button id="submit" type="submit">Login</button>
+    </form>
+    <script>
+        document.getElementById('loginForm').addEventListener("submit", async (e) => {
+            e.preventDefault();
+            let name_input = document.getElementById("name").value;
+            let password_input = document.getElementById("password").value;
+            let date = new Date();
+            let IST = date.toString()
+
+            // console.log('Date (IST):', IST);
+            try {
+                const response = await fetch('http://localhost:9089/login', {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name_input, password_input, IST,}),
+                })
+                if (response.ok) {
+                    document.getElementById('loginForm').reset();
+                    let popup = document.getElementById("popup");
+                    let message = document.getElementById("message");
+                    popup.style.transform = "translateY(-10px)";
+                    popup.style.top = "25px";
+                    popup.style.transition = "all 500ms ease-in-out";
+                    setTimeout(() => {
+                        popup.style.top = "-100px";
+                        popup.style.transform = "translateY(-100px)";
+                        popup.style.transition = "all 500ms ease-out";
+                    }, 2000)
+                } else {
+                    let popup = document.getElementById("popup");
+                    popup.style.transform = "translateY(-10px)";
+                    popup.style.top = "25px";
+                    popup.style.transition = "all 500ms ease-in-out";
+                    popup.style.backgroundColor = "red";
+                    message.innerText = "Error";
+                    message.style.fontSize= "23px";
+                    message.style.color = "white";
+                    setTimeout(() => {
+                        popup.style.top = "-100px";
+                        popup.style.transform = "translateY(-100px)";
+                        popup.style.transition = "all 500ms ease-out";
+                    }, 2000)
+                }
+            }
+            catch (error) {
+                alert("Error")
+            }
+        })
+        let button = document.getElementById("eye");
+        button.addEventListener("click", function () {
+            let password_input = document.getElementById("password");
+            if (password_input.type === "password") {
+                password_input.type = "text";
+                button.innerHTML = `<ion-icon name="eye-off-outline"></ion-icon>`;
+            } else {
+                password_input.type = "password";
+                button.innerHTML = `<ion-icon name="eye-outline"></ion-icon>`;
+            }
+        });
+
+        function store(event) {
+            event.preventDefault();
+            let existingData = JSON.parse(localStorage.getItem("Data")) || [];
+            let name = name_input.value;
+            let password = password_input.value;
+            let date = new Date();
+            let data = { name: name, password: btoa(password), date: date.toString() };
+            existingData.push(data);
+            localStorage.setItem("Data", JSON.stringify(existingData));
+            name_input.value = "";
+            password_input.value = "";
+
+        }
+    </script>
+</body>
+
+</html>
