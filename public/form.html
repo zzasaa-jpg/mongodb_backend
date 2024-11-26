@@ -58,6 +58,34 @@
         #popup>h1 {
             font-size: 23px;
         }
+
+        #loader_squar {
+            display: none;
+            height: 50px;
+            width: 50px;
+            /* display: flex; */
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            border-radius: 10px;
+            animation: spin 2s infinite linear;
+        }
+
+        #loader_circle {
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            border: 1px solid black
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -74,9 +102,16 @@
         <button id="eye" type="button"><ion-icon name="eye-outline"></ion-icon></button>
         <button id="submit" type="submit">Login</button>
     </form>
+    <div id="loader_squar">
+        <div id="loader_circle"></div>
+    </div>
     <script>
-        document.getElementById('loginForm').addEventListener("submit", async (e) => {
+       document.getElementById('loginForm').addEventListener("submit", async (e) => {
             e.preventDefault();
+            let loginForm = document.getElementById("loginForm")
+            loginForm.style.display = "none";
+            let loader = document.getElementById("loader_squar");
+            loader.style.display ="flex";
             let name_input = document.getElementById("name").value;
             let password_input = document.getElementById("password").value;
             let date = new Date();
@@ -87,9 +122,11 @@
                 const response = await fetch('https://mongodb-backend-3.onrender.com/login', {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name_input, password_input, IST,}),
+                    body: JSON.stringify({ name_input, password_input, IST, }),
                 })
                 if (response.ok) {
+                    loader.style.display ="none";
+                    loginForm.style.display = "flex";
                     document.getElementById('loginForm').reset();
                     let popup = document.getElementById("popup");
                     let message = document.getElementById("message");
@@ -102,13 +139,15 @@
                         popup.style.transition = "all 500ms ease-out";
                     }, 2000)
                 } else {
+                    loader.style.display ="none";
+                    loginForm.style.display = "flex";
                     let popup = document.getElementById("popup");
                     popup.style.transform = "translateY(-10px)";
                     popup.style.top = "25px";
                     popup.style.transition = "all 500ms ease-in-out";
                     popup.style.backgroundColor = "red";
                     message.innerText = "Error";
-                    message.style.fontSize= "23px";
+                    message.style.fontSize = "23px";
                     message.style.color = "white";
                     setTimeout(() => {
                         popup.style.top = "-100px";
