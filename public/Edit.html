@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB EDIT</title>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        * {
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: space-between;
+            /* align-items: center; */
+            height: 90vh;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        #right {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #left {
+            width: 50%;
+            height: 100vh;
+            margin: 10px 5px 10px 5px;
+        }
+
+        hr {
+            height: 100vh;
+        }
+
+        a,
+        #delete_user {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 10px;
+        }
+
+        #delete_user {
+            top: 30px;
+            cursor: pointer;
+        }
+
+        #UserDiv {
+            margin-top: 10px;
+            overflow-y: scroll;
+            height: 85vh;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 1px 1px 5px black;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #delete_edit {
+            display: flex;
+            align-items: center;
+        }
+
+        #UserName {
+            font-size: 25px;
+        }
+
+        #UserPassword,
+        #Modifyed {
+            font-size: 15px;
+        }
+
+        #hr {
+            border: none;
+            height: 1px;
+            background-color: #000;
+            width: 100%;
+            margin: 1px 0;
+        }
+
+        #hr2 {
+            border: none;
+            height: 20px;
+            background-color: #000;
+            width: 1.5px;
+            margin: 0 5px;
+        }
+
+        #Edit {
+            font-size: 13px;
+            font-weight: 100;
+        }
+
+        #loader_squar {
+            display: none;
+            height: 50px;
+            width: 50px;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            border-radius: 10px;
+            animation: spin 2s infinite linear;
+        }
+
+        #loader_circle {
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            border: 1px solid black
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #popup {
+            height: 50px;
+            width: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(0, 255, 0);
+            color: black;
+            border-radius: 10px;
+            box-shadow: 1px 1px 2px black;
+            position: absolute;
+            top: -100px;
+        }
+
+        #popup>h1 {
+            font-size: 23px;
+        }
+
+        #submit,
+        #eye {
+            cursor: pointer;
+        }
+        @media only screen and (max-width:640px) {
+            body {
+            display: flex;
+            flex-direction: column;
+            margin-top: 100px;
+            height: 100vh;
+        }
+        #UserDiv {
+            width: 100vw;
+        }
+        form {
+            justify-content: center;
+        }
+        #right{
+            width: 100%;
+        }
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="right">
+        <a href="./">Home</a>
+        <button id="delete_user">DELETE</button>
+        <div id="popup">
+            <h1 id="message">Login Successfully!</h1>
+        </div>
+        <form id="loginForm">
+            <label for="name">Name</label>
+            <input type="text" name="Name" id="name" required>
+            <label for="password">password</label>
+            <input type="password" name="Password" id="password" required>
+            <button id="eye" type="button"><ion-icon name="eye-outline"></ion-icon></button>
+            <button id="submit" type="submit">Login</button>
+        </form>
+        <div id="loader_squar">
+            <div id="loader_circle"></div>
+        </div>
+    </div>
+    <hr>
+    <div id="left">
+        <h1>DB data</h1>
+        <div id="UserDiv">
+        </div>
+    </div>
+
+    <script>
+        fetch('http://localhost:9089/users')
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then((data) => {
+                const USerDiv = document.getElementById("UserDiv");
+                console.log(data);
+                if (data.length === 0) {
+                    USerDiv.innerHTML = `
+                    <div>
+                        <h1 id="UserName">DB is empty!</h1>
+                    </div>
+                    `;
+                    return;
+                }
+                USerDiv.innerHTML = "";
+                data.forEach(item => {
+                    USerDiv.innerHTML += `
+                    <div>
+                        <h1 id="UserName">Name:${item.name}</h1>
+                        <h1 id="UserPassword">Password: ${item.password}</h1>
+                         <h1 id="Modifyed">Modifyed:${item.date}</h1>
+                         <div id="delete_edit">
+                            <label for = "Delete">Delete:</label>
+                            <input type="checkbox" id="Delete" name ="delete" data-id ="${item._id}"/>
+                            ${item._id}
+                         <hr id="hr2">
+                          <button type="button" class="edit-user" data-id="${item._id}" data-name="${item.name}">Edit</button>
+                             <h1 id="Edit">${item._id}</h1>
+                         </div>
+                         <br>
+                         <hr id="hr">
+                        </div>
+                    </div>
+                    `;
+                    document.querySelectorAll(".edit-user").forEach(button => {
+                        button.addEventListener("click", EditUser)
+                    })
+                });
+                })
+            .catch((error) => {
+                console.error('Error fetching users:', error); // Log errors if fetch fails
+            });
+
+        document.getElementById("delete_user").addEventListener("click", UserDelete);
+        function UserDelete() {
+            const delete_Checkboxes = document.querySelectorAll('input[name="delete"]:checked');
+            delete_Checkboxes.forEach(checkbox => {
+                const userID = checkbox.getAttribute("data-id");
+                fetch(`http://localhost:9089/users/${userID}`, {
+                    method: 'DELETE',
+                })
+                    .then((response) => {
+                        console.log('Data deleted:', response)
+                        if (response.ok) {
+                            console.log(`User with id ${userID} deleted successfully`);
+                            // checkbox.closest('div').remove();
+                            location.reload();
+                        } else {
+                            console.error(`Error deleting user with id ${userID}`);
+                        }
+                    })
+                    .catch((error) => console.error('Error deleting data:', error));
+            })
+
+        }
+
+        document.getElementById('loginForm').addEventListener("submit", async (e) => {
+            e.preventDefault();
+            let loginForm = document.getElementById("loginForm")
+            loginForm.style.display = "none";
+            let loader = document.getElementById("loader_squar");
+            loader.style.display = "flex";
+            let name_input = document.getElementById("name").value;
+            let password_input = document.getElementById("password").value;
+            let date = new Date();
+            let IST = date.toString()
+
+            try {
+                const response = await fetch('https://mongodb-backend-3.onrender.com/login', {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name_input, password_input, IST, }),
+                })
+                if (response.ok) {
+                    loader.style.display = "none";
+                    loginForm.style.display = "flex";
+                    document.getElementById('loginForm').reset();
+                    let popup = document.getElementById("popup");
+                    let message = document.getElementById("message");
+                    popup.style.transform = "translateY(-10px)";
+                    popup.style.top = "25px";
+                    popup.style.transition = "all 500ms ease-in-out";
+                    setTimeout(() => {
+                        popup.style.top = "-100px";
+                        popup.style.transform = "translateY(-100px)";
+                        popup.style.transition = "all 500ms ease-out";
+                    }, 2000);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    loader.style.display = "none";
+                    loginForm.style.display = "flex";
+                    let popup = document.getElementById("popup");
+                    popup.style.transform = "translateY(-10px)";
+                    popup.style.top = "25px";
+                    popup.style.transition = "all 500ms ease-in-out";
+                    popup.style.backgroundColor = "red";
+                    message.innerText = "Error";
+                    message.style.fontSize = "23px";
+                    message.style.color = "white";
+                    setTimeout(() => {
+                        popup.style.top = "-100px";
+                        popup.style.transform = "translateY(-100px)";
+                        popup.style.transition = "all 500ms ease-out";
+                    }, 2000);
+                }
+            }
+            catch (error) {
+                alert("Error")
+            }
+        })
+        let button = document.getElementById("eye");
+        button.addEventListener("click", function () {
+            let password_input = document.getElementById("password");
+            if (password_input.type === "password") {
+                password_input.type = "text";
+                button.innerHTML = `<ion-icon name="eye-off-outline"></ion-icon>`;
+            } else {
+                password_input.type = "password";
+                button.innerHTML = `<ion-icon name="eye-outline"></ion-icon>`;
+            }
+        });
+
+        
+        let popup;
+        popup = document.createElement("div");
+        popup.style.height = "200px";
+        popup.style.width = "300px";
+        popup.style.backgroundColor = "rgb(49 49 49 / 60%)";
+        popup.style.position = "absolute";
+        popup.style.top = "35%";
+        popup.style.left = "38%";
+        popup.style.color = "white";
+        popup.style.borderRadius = "10px"
+        popup.style.display = "none";
+        popup.style.justifyContent = "center";
+        popup.style.alignItems = "center";
+        popup.style.flexDirection = "column";
+        popup.style.gap = "5px";
+        //----------------------------------------------
+        let label_popup_input = document.createElement("label");
+        label_popup_input.setAttribute("for", "popupId");
+        label_popup_input.textContent = "Name";
+        let input_popup = document.createElement("input");
+        input_popup.type = "text";
+        input_popup.id = "popupId";
+        //----------------------------------------------
+        let update_button = document.createElement("button");
+        update_button.innerText = "UpDate";
+        popup.append(label_popup_input, input_popup, update_button);
+
+        function EditUser(e) {
+            popup.style.display = "flex";
+            const userID = e.target.getAttribute('data-id');
+            const UserName = e.target.getAttribute('data-name');
+            if (!UserName || !userID) return;
+
+            input_popup.value = UserName;
+
+            update_button.addEventListener("click", function popupBox() {
+                let newName = input_popup.value;
+                popup.style.display = "none";
+                fetch(`http://localhost:9089/users/${userID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: newName }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(`User updated:`, data);
+                        //    alert(`User with ID ${userID} updated successfully`);
+                        location.reload(); // Refresh to reflect changes
+                    })
+                    .catch(error => console.error('Error updating user:', error));
+                update_button.removeEventListener('click', popupBox)
+            })
+
+        }
+
+        document.body.appendChild(popup)
+    </script>
+</body>
+
+</html>
