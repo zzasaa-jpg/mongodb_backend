@@ -205,7 +205,7 @@
     </div>
 
     <script>
-        fetch('http://localhost:9089/users')
+        fetch('https://mongodb-backend-3.onrender.com/users')
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(`HTTP error! Status: ${res.status}`);
@@ -381,7 +381,7 @@
             update_button.addEventListener("click", function popupBox() {
                 let newName = input_popup.value;
                 popup.style.display = "none";
-                fetch(`http://localhost:9089/users/${userID}`, {
+                fetch(`https://mongodb-backend-3.onrender.com/users/${userID}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: newName }),
