@@ -257,7 +257,7 @@
             const delete_Checkboxes = document.querySelectorAll('input[name="delete"]:checked');
             delete_Checkboxes.forEach(checkbox => {
                 const userID = checkbox.getAttribute("data-id");
-                fetch(`http://localhost:9089/users/${userID}`, {
+                fetch(`https://mongodb-backend-3.onrender.com/users/${userID}`, {
                     method: 'DELETE',
                 })
                     .then((response) => {
