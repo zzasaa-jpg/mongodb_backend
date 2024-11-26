@@ -153,22 +153,26 @@
         #eye {
             cursor: pointer;
         }
+
         @media only screen and (max-width:640px) {
             body {
-            display: flex;
-            flex-direction: column;
-            margin-top: 100px;
-            height: 100vh;
-        }
-        #UserDiv {
-            width: 100vw;
-        }
-        form {
-            justify-content: center;
-        }
-        #right{
-            width: 100%;
-        }
+                display: flex;
+                flex-direction: column;
+                margin-top: 100px;
+                height: 100vh;
+            }
+
+            #UserDiv {
+                width: 100vw;
+            }
+
+            form {
+                justify-content: center;
+            }
+
+            #right {
+                width: 100%;
+            }
 
         }
     </style>
@@ -243,7 +247,7 @@
                         button.addEventListener("click", EditUser)
                     })
                 });
-                })
+            })
             .catch((error) => {
                 console.error('Error fetching users:', error); // Log errors if fetch fails
             });
@@ -339,7 +343,7 @@
             }
         });
 
-        
+
         let popup;
         popup = document.createElement("div");
         popup.style.height = "200px";
